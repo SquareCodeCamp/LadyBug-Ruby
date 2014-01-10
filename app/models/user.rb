@@ -11,5 +11,8 @@ class User < ActiveRecord::Base
 	validates :email, length: {maximum: 255}, uniqueness: {case_sensitive: false}, allow_nil: true, format: {with: /\A[^\s@]+@[^\s@]+\.[^\s@]+\z/}
 	validates :bio, length: {maximum: 1024}, allow_nil: true
 	validates :pic, length: {maximum: 5.megabytes}, allow_nil: true
-end
 
+  def token
+    Session.generate_token(self)
+  end
+end

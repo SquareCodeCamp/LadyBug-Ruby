@@ -19,11 +19,17 @@ require 'spec_helper'
 # that an instance is receiving a specific message.
 
 describe PostsController do
-
+  before do
+    @user = User.where(
+      email: 'codecamp@example.com',
+      password: 'password',
+      name: 'Namey Name'
+    ).first_or_create
+  end
   # This should return the minimal set of attributes required to create a valid
   # Post. As you add validations to Post, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) { { "content" => "MyText" } }
+  let(:valid_attributes) { { "content" => "MyText", "user_id" => @user.id } }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
@@ -63,40 +69,32 @@ describe PostsController do
 
   describe "POST create" do
     describe "with valid params" do
+      let(:session_params) { { token: @user.token } }
+      let(:params) { { post: valid_attributes }.merge(session_params) }
+
       it "creates a new Post" do
         expect {
-          post :create, {:post => valid_attributes}, valid_session
+          post :create, params, valid_session
         }.to change(Post, :count).by(1)
+
+        post = Post.last
+        post.user.should == @user
       end
 
       it "assigns a newly created post as @post" do
-        post :create, {:post => valid_attributes}, valid_session
+        post :create, params, valid_session
         assigns(:post).should be_a(Post)
         assigns(:post).should be_persisted
       end
 
       it "redirects to the created post" do
-        post :create, {:post => valid_attributes}, valid_session
+        post :create, params, valid_session
         response.should redirect_to(Post.last)
       end
     end
-
-    describe "with invalid params" do
-      it "assigns a newly created but unsaved post as @post" do
-        # Trigger the behavior that occurs when invalid params are submitted
-        Post.any_instance.stub(:save).and_return(false)
-        post :create, {:post => { "content" => "invalid value" }}, valid_session
-        assigns(:post).should be_a_new(Post)
-      end
-
-      it "re-renders the 'new' template" do
-        # Trigger the behavior that occurs when invalid params are submitted
-        Post.any_instance.stub(:save).and_return(false)
-        post :create, {:post => { "content" => "invalid value" }}, valid_session
-        response.should render_template("new")
-      end
-    end
   end
+
+
 
   describe "PUT update" do
     describe "with valid params" do
@@ -156,5 +154,4 @@ describe PostsController do
       response.should redirect_to(posts_url)
     end
   end
-
 end
