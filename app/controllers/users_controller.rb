@@ -1,24 +1,24 @@
 class UsersController < ApplicationController
 
+	respond_to :json, :html
+
 	def index
-		render json: User.all
+		respond_with User.all
 	end
 
 	def new
 		@user = User.new
+		respond_with @user
 	end
 
 	def create
 		@user = User.create(user_params)
-		if @user.valid?
-			redirect_to login_url
-		else
-			render "new"
-		end
+		respond_with @user, location: login_url
 	end
 
 	def show
-		render json: User.find(params[:id])
+		@user = User.find(params[:id])
+		respond_with @user
 	end
 
 	private
