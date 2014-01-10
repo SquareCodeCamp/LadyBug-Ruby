@@ -8,5 +8,7 @@ class CreateUsers < ActiveRecord::Migration
     	t.binary :pic, limit: 5.megabytes
       t.timestamps
     end
+
+    add_index :users, :email
   end
 end
