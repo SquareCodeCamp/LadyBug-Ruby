@@ -36,7 +36,7 @@ describe PostsController do
   # PostsController. Be sure to keep this updated too.
   let(:valid_session) { {token: Session.generate_token(user)} }
 
-  let(:user) { User.create! name: 'testUser', email: 'foo@example.com' }
+  let(:user) { User.create! name: 'testUser', email: 'foo@example.com', password: 'hunter2' }
 
   def create_post(attrs)
     Post.create! attrs.merge(user: user)
@@ -84,7 +84,7 @@ describe PostsController do
         }.to change(Post, :count).by(1)
 
         post = Post.last
-        post.user.should == @user
+        post.user.should == user
       end
 
       it "assigns a newly created post as @post" do

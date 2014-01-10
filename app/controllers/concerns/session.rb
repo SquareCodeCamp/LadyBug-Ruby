@@ -13,7 +13,7 @@ module Session
 
   private
   def get_token
-  	session[:token] || params[:token]
+  	headers['Authorization'] || session[:token] || params[:token]
   end
 
 end
