@@ -4,6 +4,8 @@ Ladybug::Application.routes.draw do
     resources :posts
   end
 
+  resources :messages
+
   get '/about' => 'staticpages#about'
 
   get '/login', to: 'sessions#new'
