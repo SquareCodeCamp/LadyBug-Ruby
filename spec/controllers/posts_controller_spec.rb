@@ -34,11 +34,17 @@ describe PostsController do
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
   # PostsController. Be sure to keep this updated too.
-  let(:valid_session) { {} }
+  let(:valid_session) { {token: Session.generate_token(user)} }
+
+  let(:user) { User.create! name: 'testUser', email: 'foo@example.com' }
+
+  def create_post(attrs)
+    Post.create! attrs.merge(user: user)
+  end
 
   describe "GET index" do
     it "assigns all posts as @posts" do
-      post = Post.create! valid_attributes
+      post = create_post valid_attributes
       get :index, {}, valid_session
       assigns(:posts).should eq([post])
     end
@@ -46,7 +52,7 @@ describe PostsController do
 
   describe "GET show" do
     it "assigns the requested post as @post" do
-      post = Post.create! valid_attributes
+      post = create_post valid_attributes
       get :show, {:id => post.to_param}, valid_session
       assigns(:post).should eq(post)
     end
@@ -61,7 +67,7 @@ describe PostsController do
 
   describe "GET edit" do
     it "assigns the requested post as @post" do
-      post = Post.create! valid_attributes
+      post = create_post valid_attributes
       get :edit, {:id => post.to_param}, valid_session
       assigns(:post).should eq(post)
     end
@@ -99,7 +105,7 @@ describe PostsController do
   describe "PUT update" do
     describe "with valid params" do
       it "updates the requested post" do
-        post = Post.create! valid_attributes
+        post = create_post valid_attributes
         # Assuming there are no other posts in the database, this
         # specifies that the Post created on the previous line
         # receives the :update_attributes message with whatever params are
@@ -109,13 +115,13 @@ describe PostsController do
       end
 
       it "assigns the requested post as @post" do
-        post = Post.create! valid_attributes
+        post = create_post valid_attributes
         put :update, {:id => post.to_param, :post => valid_attributes}, valid_session
         assigns(:post).should eq(post)
       end
 
       it "redirects to the post" do
-        post = Post.create! valid_attributes
+        post = create_post valid_attributes
         put :update, {:id => post.to_param, :post => valid_attributes}, valid_session
         response.should redirect_to(post)
       end
@@ -123,7 +129,7 @@ describe PostsController do
 
     describe "with invalid params" do
       it "assigns the post as @post" do
-        post = Post.create! valid_attributes
+        post = create_post valid_attributes
         # Trigger the behavior that occurs when invalid params are submitted
         Post.any_instance.stub(:save).and_return(false)
         put :update, {:id => post.to_param, :post => { "content" => "invalid value" }}, valid_session
@@ -131,7 +137,7 @@ describe PostsController do
       end
 
       it "re-renders the 'edit' template" do
-        post = Post.create! valid_attributes
+        post = create_post valid_attributes
         # Trigger the behavior that occurs when invalid params are submitted
         Post.any_instance.stub(:save).and_return(false)
         put :update, {:id => post.to_param, :post => { "content" => "invalid value" }}, valid_session
@@ -142,14 +148,14 @@ describe PostsController do
 
   describe "DELETE destroy" do
     it "destroys the requested post" do
-      post = Post.create! valid_attributes
+      post = create_post valid_attributes
       expect {
         delete :destroy, {:id => post.to_param}, valid_session
       }.to change(Post, :count).by(-1)
     end
 
     it "redirects to the posts list" do
-      post = Post.create! valid_attributes
+      post = create_post valid_attributes
       delete :destroy, {:id => post.to_param}, valid_session
       response.should redirect_to(posts_url)
     end

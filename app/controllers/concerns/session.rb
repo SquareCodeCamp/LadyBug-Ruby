@@ -8,6 +8,12 @@ module Session
   end
 
   def current_user
-    User.find_by_email!(Session.decode_token(params[:token]))
+    User.find_by_email(get_token && Session.decode_token(get_token))
   end
+
+  private
+  def get_token
+  	session[:token] || params[:token]
+  end
+
 end
