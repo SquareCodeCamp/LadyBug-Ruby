@@ -1,6 +1,9 @@
 class User < ActiveRecord::Base
 
 	has_many :posts
+	has_many :sent_messages, class_name: 'Message', foreign_key: :sender_id
+	has_many :received_messages, class_name: 'Message', foreign_key: :receiver_id
+
 
 	validates :name, presence: true, length: {maximum: 100}
 	validates :lat, numericality: {greater_than: -90, less_than: 90}, allow_nil: true
